@@ -8,6 +8,7 @@ namespace sclib.Models
         public string descrHtml { get; set; }
         public decimal price { get; set; }
         public string availability { get; set; }
+        public string imageUrl { get; set; }
     }
 
     [Table("SourceCategories")]
@@ -35,6 +36,7 @@ namespace sclib.Models
         public string Availability { get; set; }
         public int CategoryID { get; set; }
         public string Description { get; set; }
+        public string ImageUrl { get; set; }
     }
 
     public class StarRating
