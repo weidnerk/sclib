@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace sclib.Models
 {
@@ -22,10 +21,9 @@ namespace sclib.Models
     }
 
     [Table("SamsClubItems")]
-
-
     public class SamsClubItem
     {
+        public int ID { get; set; }
         public string Title { get; set; }
         public decimal Price { get; set; }
         public string Url { get; set; }
@@ -33,7 +31,6 @@ namespace sclib.Models
         public string SeoAvgRating { get; set; }
         public string SeoBestRating { get; set; }
         public string SeoReviewCount { get; set; }
-        [Key]
         public string ItemId { get; set; }
         public string Availability { get; set; }
         public int CategoryID { get; set; }
