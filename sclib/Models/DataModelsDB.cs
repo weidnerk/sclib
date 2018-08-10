@@ -25,6 +25,7 @@ namespace sclib.Models
         {
             Database.ExecuteSqlCommand("delete from SamsClubItems where categoryId=" + categoryId.ToString());
         }
+
         public async Task ListingSave(SamsClubItem listing)
         {
             try
@@ -32,9 +33,9 @@ namespace sclib.Models
                 SamsItems.Add(listing);
                 await this.SaveChangesAsync();
             }
-            catch (Exception exc)
+            catch
             {
-                string msg = exc.Message;
+                SamsItems.Remove(listing);
                 throw;
             }
         }
