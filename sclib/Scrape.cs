@@ -3,6 +3,7 @@ using sclib.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -24,13 +25,19 @@ namespace sclib
             var detail = new ItemDetail();
             string itemId = null;
             string descr = null;
+            int i = 0;
             try
             {
+                //if (url == "https://www.samsclub.com/sams/huggies-similac-aveeno-baby-ecos-5pc-bundle/prod22381122.ip?xid=plp_product_1_40")
+                //{
+                //    int zzi = 999;
+                //}
                 using (HttpClient client = new HttpClient())
                 using (HttpResponseMessage response = await client.GetAsync(url))
                 using (HttpContent content = response.Content)
                 {
                     string result = await content.ReadAsStringAsync();
+
                     var htmlDocument = new HtmlDocument();
                     htmlDocument.LoadHtml(result);
 
@@ -38,6 +45,10 @@ namespace sclib
                     var z = htmlDocument.DocumentNode.SelectNodes("//input[@id='itemNo']").FirstOrDefault();
                     var z1 = z.Attributes["value"].Value;
                     itemId = z1;
+                    if (itemId == "980043352")
+                    {
+                        int zb = 100;
+                    }
 
                     var descrNode = htmlDocument.DocumentNode.SelectNodes("//div[contains(@class,'itemBullets')]//li");
                     var node = htmlDocument.DocumentNode.SelectNodes("//div[contains(@class,'itemBullets')]");
@@ -70,6 +81,34 @@ namespace sclib
                         detail.imageUrl = im;
                     }
 
+                    //var picCollection = htmlDocument.DocumentNode.SelectNodes("//div[contains(@class,'sc-image-viewer-sellpoint-hero')]");
+                    var pic = htmlDocument.DocumentNode.SelectNodes("//div[@id='plImageHolder']");
+                    if (pic != null)
+                    {
+                        var imhDoc = new HtmlDocument();
+                        imhDoc.LoadHtml(pic[0].OuterHtml);
+                        var imgUrls = imhDoc.DocumentNode.SelectNodes("//img/@src").First();
+                        var im = "https:" + imgUrls.Attributes["src"].Value;
+                        bool done = false;
+                        detail.picUrl = new List<string>();
+                        do
+                        {
+                            //if (i == 38)
+                            //{
+                            //    int zzz = 100;
+                            //}
+                            string uri = createPicUrl(im, i++);
+                            FetchPic(uri);
+
+                            if (FetchPic(uri))
+                                detail.picUrl.Add(uri);
+                            else done = true;
+                            if (i == 10) done = true;   // backstop
+                        } while (!done);
+
+                        detail.imageUrl = im;
+                    }
+
                 }
                 return detail;
             }
@@ -77,6 +116,76 @@ namespace sclib
             {
                 return null;
             }
+        }
+
+        // How to collect all item images?
+        // Use createPicUrl to get next image, but when does it end? 
+        // If ask for non existant, sam's returns place holder image - that image has size 11,451 bytes
+        // How else to do it?
+        static bool FetchPic(string uri)
+        {
+            WebClient wc = new WebClient();
+            byte[] bytes = wc.DownloadData(uri);
+            if (bytes.Length == 11451) return false;
+            return true;
+        }
+    
+
+        static string createPicUrl(string incomingUrl, int index)
+        {
+            string uri = null;
+            char letter;
+            switch (index)
+            {
+                case 0:
+                    letter = 'A';
+                    break;
+                case 1:
+                    letter = 'B';
+                    break;
+                case 2:
+                    letter = 'C';
+                    break;
+                case 3:
+                    letter = 'D';
+                    break;
+                case 4:
+                    letter = 'E';
+                    break;
+                case 5:
+                    letter = 'F';
+                    break;
+                case 6:
+                    letter = 'G';
+                    break;
+                case 7:
+                    letter = 'H';
+                    break;
+                case 8:
+                    letter = 'I';
+                    break;
+                case 9:
+                    letter = 'J';
+                    break;
+                case 10:
+                    letter = 'K';
+                    break;
+                default:
+                    letter = 'Z';
+                    break;
+            }
+            int pos = incomingUrl.IndexOf('?');
+            uri = incomingUrl.Substring(0, pos - 1);
+            uri += letter + "?wid=685&hei=685";
+            return uri;
+        }
+
+        static bool isValidUrl(string uriName)
+        {
+            Uri uriResult;
+            bool result = Uri.TryCreate(uriName, UriKind.Absolute, out uriResult)
+                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            return result;
         }
 
         static decimal parsePrice(string priceStr)

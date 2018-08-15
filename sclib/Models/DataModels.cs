@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace sclib.Models
 {
@@ -9,6 +10,7 @@ namespace sclib.Models
         public decimal price { get; set; }
         public string availability { get; set; }
         public string imageUrl { get; set; }
+        public List<string> picUrl { get; set; }
     }
 
     [Table("SourceCategories")]
@@ -37,6 +39,7 @@ namespace sclib.Models
         public int CategoryID { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
+        public string PictureUrl { get; set; }
     }
 
     public class StarRating
