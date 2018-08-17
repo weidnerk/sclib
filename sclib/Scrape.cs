@@ -98,8 +98,6 @@ namespace sclib
                             //    int zzz = 100;
                             //}
                             string uri = createPicUrl(im, i++);
-                            FetchPic(uri);
-
                             if (FetchPic(uri))
                                 detail.picUrl.Add(uri);
                             else done = true;
